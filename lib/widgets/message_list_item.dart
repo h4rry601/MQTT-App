@@ -1,43 +1,48 @@
 import 'package:flutter/material.dart';
 import '../models/message_data.dart';
+import 'package:intl/intl.dart';
 
 class MessageListItem extends StatelessWidget {
-  final MessageData message;
+  final MessageData messageData;
   final VoidCallback onTap;
 
   const MessageListItem({
-    super.key,
-    required this.message,
+    Key? key,
+    required this.messageData,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final isSuccess = message.result?.toLowerCase() == 'success';
+    final dateFormat = DateFormat('HH:mm:ss dd/MM/yyyy');
+    
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       child: ListTile(
-        onTap: onTap,
         title: Text(
-          'UUID: ${message.uuid.isEmpty ? 'N/A' : message.uuid}',
+          'Amount: ${messageData.amount}',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Time: ${message.formattedTimestamp}'),
             Text(
-              'Result: ${message.result ?? 'N/A'}',
-              style: TextStyle(
-                color: isSuccess ? Colors.green : Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
+              messageData.content.length > 30 
+                ? '${messageData.content.substring(0, 30)}...' 
+                : messageData.content,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            Text('Interval: ${message.interval ?? 'N/A'}s'),
-            Text('Amount: ${message.amount}'),
-            Text('Content: ${message.content}'),
+            Text(
+              'Received: ${dateFormat.format(messageData.timestamp)}',
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ],
         ),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        onTap: onTap,
       ),
     );
   }
